@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: change-me-root
+      MYSQL_DATABASE: compliance_os
+      MYSQL_USER: compliance
+      MYSQL_PASSWORD: change-me
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+  compliance-os:
+    build: .
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      JWT_SECRET: replace-with-a-long-random-secret-at-least-32-characters
+      MYSQLHOST: mysql
+      MYSQLPORT: 3306
+      MYSQLUSER: compliance
+      MYSQLPASSWORD: change-me
+      MYSQLDATABASE: compliance_os
+      UPLOAD_DIR: /app/uploads
+      CORS_ORIGIN: http://localhost:3000
+    volumes:
+      - uploads_data:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  uploads_data:

@@ -238,7 +238,7 @@ function mapKbFile(row) {
     id: row.id, kind: row.kind, assetId: row.asset_id || undefined,
     sheets: row.sheets_json ? JSON.parse(row.sheets_json) : undefined,
     size: Number(row.size || 0), name: row.name, title: row.title, cat: row.cat,
-    mod: row.mod, desc: row.description, by: row.by_user, ts: Number(row.ts)
+    mod: row.module, desc: row.description, by: row.by_user, ts: Number(row.ts)
   };
 }
 app.get('/api/kb/files', authenticate, async (req, res) => {
@@ -247,9 +247,9 @@ app.get('/api/kb/files', authenticate, async (req, res) => {
 });
 app.put('/api/kb/files/:id', authenticate, requireRole('admin', 'analyst'), async (req, res) => {
   const v = req.body || {};
-  await db.run(`INSERT INTO kb_files(id,kind,asset_id,sheets_json,size,name,title,cat,mod,description,by_user,ts)
+  await db.run(`INSERT INTO kb_files(id,kind,asset_id,sheets_json,size,name,title,cat,module,description,by_user,ts)
     VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
-    ON DUPLICATE KEY UPDATE kind=VALUES(kind),asset_id=VALUES(asset_id),sheets_json=VALUES(sheets_json),size=VALUES(size),name=VALUES(name),title=VALUES(title),cat=VALUES(cat),mod=VALUES(mod),description=VALUES(description),by_user=VALUES(by_user),ts=VALUES(ts)`,
+    ON DUPLICATE KEY UPDATE kind=VALUES(kind),asset_id=VALUES(asset_id),sheets_json=VALUES(sheets_json),size=VALUES(size),name=VALUES(name),title=VALUES(title),cat=VALUES(cat),module=VALUES(module),description=VALUES(description),by_user=VALUES(by_user),ts=VALUES(ts)`,
     [req.params.id, v.kind || null, v.assetId || null, v.sheets ? JSON.stringify(v.sheets) : null, v.size || 0, v.name || null, v.title || req.params.id, v.cat || 'Other', v.mod || 'library', v.desc || null, req.user.id, Number(v.ts || Date.now())]);
   await audit(req, 'kb-file.upsert', 'kb_file', req.params.id, { title: v.title });
   res.json({ id: req.params.id });

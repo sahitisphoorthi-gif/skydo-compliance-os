@@ -115,7 +115,7 @@ const statements = [
   name VARCHAR(500) NULL,
   title VARCHAR(500) NOT NULL,
   cat VARCHAR(100) NULL,
-  mod VARCHAR(100) NULL,
+  module VARCHAR(100) NULL,
   description TEXT NULL,
   by_user BIGINT UNSIGNED NULL,
   ts BIGINT NOT NULL,
